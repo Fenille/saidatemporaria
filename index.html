@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ata Colaborativa - 18º BPM/I</title>
+
+  <style>
+    :root{
+      --amarelo:#f9ff7a;
+      --amarelo-neon:#ffff66;
+      --cinza:#d0d0d0;
+      --cinza-medio:#777;
+      --bg:#050509;
+      --card-bg:rgba(10,10,15,0.96);
+      --radius:16px;
+      --shadow-soft:0 14px 40px rgba(0,0,0,0.8);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif;}
+
+    body{
+      min-height:100vh;
+      background:radial-gradient(circle at top,#202020 0,#050509 50%,#000 100%);
+      color:var(--amarelo);
+      padding:20px 12px 40px;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:6px;
+      font-size:1.7rem;
+      letter-spacing:0.05em;
+      text-transform:uppercase;
+    }
+
+    .subtitulo{
+      text-align:center;
+      font-size:0.9rem;
+      color:var(--cinza-medio);
+      margin-bottom:20px;
+    }
+
+    .login{
+      max-width:430px;
+      margin:20px auto 10px;
+      padding:22px 20px 24px;
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .login h2{text-align:center;margin-bottom:12px;font-size:1.1rem;}
+
+    label{
+      display:block;
+      font-size:0.86rem;
+      color:var(--cinza);
+      margin-top:8px;
+      margin-bottom:2px;
+    }
+
+    select,input,textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:var(--radius);
+      border:1px solid #222;
+      margin-top:2px;
+      background:#101018;
+      color:var(--amarelo);
+      font-size:0.92rem;
+      outline:none;
+    }
+
+    select:focus,input:focus,textarea:focus{
+      border-color:var(--amarelo-neon);
+      box-shadow:0 0 0 1px rgba(249,255,122,0.35);
+    }
+
+    textarea{resize:vertical;min-height:160px;}
+
+    button{
+      padding:11px 14px;
+      border-radius:var(--radius);
+      border:none;
+      cursor:pointer;
+      font-weight:bold;
+      font-size:0.95rem;
+      background:#101010;
+      color:var(--amarelo);
+      transition:background 0.2s,transform 0.1s,box-shadow 0.2s;
+      box-shadow:0 10px 25px rgba(0,0,0,0.6);
+    }
+
+    button:hover{
+      background:#181818;
+      transform:translateY(-1px);
+      box-shadow:0 14px 32px rgba(0,0,0,0.8);
+    }
+
+    button:active{
+      transform:translateY(0);
+      box-shadow:0 8px 18px rgba(0,0,0,0.7);
+    }
+
+    .btn-full{width:100%;margin-top:12px;}
+    .btn-sec{background:#171717;}
+    .btn-alert{background:#2b0000;color:#ffb3b3;border:1px solid rgba(255,120,120,0.5);}
+    .btn-alert:hover{background:#3a0000;}
+    .btn-voltar{margin-bottom:10px;background:#151515;}
+
+    .acoes-iniciais{
+      max-width:430px;
+      margin:0 auto 20px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .hint{font-size:0.78rem;color:var(--cinza-medio);margin-top:4px;}
+
+    .container{
+      display:none;
+      max-width:980px;
+      margin:0 auto;
+    }
+
+    /* apresentação tipo “slide” com rolagem em tela cheia */
+    #telaApresentacao{
+      max-height:100vh;
+      overflow-y:auto;
+    }
+
+    #telaApresentacao .bloco{
+      max-width:1100px;
+      margin:0 auto 16px;
+      background:radial-gradient(circle at top,#151515 0,#050509 60%,#000 100%);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      gap:18px;
+      align-items:flex-start;
+    }
+
+    @media (max-width:860px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .bloco{
+      background:var(--card-bg);
+      padding:16px 16px 18px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(255,255,255,0.06);
+      margin-bottom:16px;
+    }
+
+    .bloco h3{margin-bottom:8px;font-size:1rem;}
+    .bloco small{display:block;color:var(--cinza-medio);font-size:0.78rem;margin-bottom:6px;}
+
+    .tag-user{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:0.8rem;
+      padding:4px 9px;
+      border-radius:999px;
+      background:rgba(0,0,0,0.75);
+      border:1px solid rgba(249,255,122,0.25);
+      margin-bottom:10px;
+    }
+    .tag-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:var(--amarelo-neon);
+      box-shadow:0 0 8px rgba(249,255,122,0.9);
+    }
+
+    #listaFalas{font-size:0.83rem;line-height:1.5;}
+    #listaFalas .linha-fala{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:8px;padding:4px 0;
+      border-bottom:1px dashed rgba(255,255,255,0.06);
+    }
+    #listaFalas .linha-fala span{flex:1;}
+    #listaFalas .status{width:20px;text-align:center;}
+
+    /* APRESENTAÇÃO */
+    #telaApresentacao .top-bar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    #cargoApresentacao{max-width:320px;}
+
+    .apresentacao-grid{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      align-items:stretch;
+      min-height:350px;
+    }
+
+    #falaApresentacao,#graficoApresentacao{
+      background:#000;
+      border-radius:var(--radius);
+      border:1px solid rgba(249,255,122,0.25);
+      padding:18px 16px;
+      min-height:180px;
+    }
+
+    #falaApresentacao h3{
+      margin-bottom:10px;
+      font-size:1.1rem;
+      color:var(--amarelo-neon);
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+    }
+
+    #graficoApresentacao h3{
+      margin-bottom:8px;
+      font-size:0.98rem;
+      color:var(--amarelo-neon);
+    }
+
+    #falaApresentacaoTexto{
+      white-space:pre-wrap;
+      font-size:1.1rem;
+      line-height:1.7;
+    }
+
+    #falaMetasResultados{
+      margin-top:14px;
+      font-size:0.9rem;
+      color:var(--cinza-medio);
+      line-height:1.5;
+    }
+
+    #graficoApresentacaoConteudo{
+      font-size:0.86rem;
+      color:var(--cinza-medio);
+      line-height:1.5;
+    }
+
+    .botoes-operador{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:10px;
+    }
+
+    /* ATA ATUAL (tela apresentação) */
+    #ataFinal{
+      white-space:pre-wrap;
+      background:#050505;
+      padding:18px 14px;
+      margin-top:18px;
+      border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,0.08);
+      font-size:0.92rem;
+      line-height:1.55;
+      display:none;
+    }
+    #ataFinal h2{
+      margin-bottom:10px;
+      font-size:1.1rem;
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+    }
+
+    /* HISTÓRICO DE ATAS */
+    #listaAtas button{
+      width:100%;
+      justify-content:space-between;
+      display:flex;
+      align-items:center;
+      margin-bottom:6px;
+      background:#111;
+    }
+    #ataVisualizadaConteudo{
+      white-space:pre-wrap;
+      background:#050505;
+      padding:14px 10px;
+      border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,0.08);
+      font-size:0.9rem;
+      line-height:1.5;
+    }
+
+    /* IMPRESSÃO: mostra só a ata atual (tela apresentação) */
+    @media print{
+      body{background:#fff;color:#000;padding:0;}
+      #telaInicial,#telaCadastro,#telaApresentacao .top-bar,#telaApresentacao .botoes-operador,#telaHistorico{
+        display:none !important;
+      }
+      #telaApresentacao,#ataFinal{
+        display:block !important;
+        max-width:100%;
+        margin:0;
+        border:none;
+        border-radius:0;
+        box-shadow:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>ATA COLABORATIVA</h1>
+  <div class="subtitulo">18º BPM/I – Sistema de preenchimento colaborativo para reunião</div>
+
+  <!-- TELA INICIAL -->
+  <div id="telaInicial">
+    <div class="login" id="loginBox">
+      <h2>Acesso para cadastro de falas</h2>
+
+      <label for="usuario">Cargo / Função</label>
+      <select id="usuario">
+        <option value="">Selecione seu cargo</option>
+        <option>Comandante do Batalhão</option>
+        <option>Subcomandante</option>
+        <option>Coordenador Operacional</option>
+        <option>Comandante da 1ª CIA</option>
+        <option>Comandante da 2ª CIA</option>
+        <option>Comandante da 3ª CIA</option>
+        <option>Comandante da 4ª CIA</option>
+        <option>Comandante da 5ª CIA</option>
+        <option>Comandante da Força Tática</option>
+        <option>Chefe P1</option>
+        <option>Chefe P2</option>
+        <option>Chefe P3</option>
+        <option>Chefe P4</option>
+        <option>Chefe P5</option>
+        <option>Chefe PJMD</option>
+      </select>
+
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="Senha padrão: 1234" />
+
+      <button class="btn-full" onclick="login()">Entrar para cadastrar fala</button>
+      <div class="hint">O login é necessário apenas para cadastrar/editar a fala do seu cargo.</div>
+    </div>
+
+    <div class="acoes-iniciais">
+      <button onclick="irParaApresentacao()">Ir para tela de apresentação</button>
+      <button class="btn-sec" onclick="abrirHistorico()">Ver atas de reuniões anteriores</button>
+    </div>
+  </div>
+
+  <!-- TELA CADASTRO DE FALAS -->
+  <div class="container" id="telaCadastro">
+    <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar para página inicial</button>
+
+    <div class="tag-user">
+      <div class="tag-dot"></div>
+      <span id="tituloCargo"></span>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="bloco">
+          <h3>Sua fala / pauta</h3>
+          <small>Preencha o que será apresentado por você na reunião.</small>
+          <textarea id="textoFala" placeholder="Digite aqui sua fala..."></textarea>
+
+          <label for="imagemUrl">Link da imagem/gráfico (URL)</label>
+          <input id="imagemUrl" type="text" placeholder="Cole aqui o link da imagem ou gráfico (opcional)">
+
+          <label for="arquivoUpload">Ou envie um arquivo (imagem, PDF, Excel)</label>
+          <input id="arquivoUpload" type="file" accept=".png,.jpg,.jpeg,.pdf,.xls,.xlsx,.csv,.gif,.webp,.bmp" />
+          <div class="hint">Se um arquivo for enviado, ele será usado na apresentação automaticamente.</div>
+
+          <label for="graficoDescricao">Descrição / observações sobre o gráfico</label>
+          <textarea id="graficoDescricao" rows="3" placeholder="Texto explicativo que aparecerá junto da imagem (opcional)"></textarea>
+
+          <label for="metasResultados">Metas e resultados</label>
+          <textarea id="metasResultados" rows="4" placeholder="Metas e resultados ligados à sua área (opcional)"></textarea>
+
+          <button class="btn-full" onclick="salvarFala()">Salvar / Atualizar fala e dados</button>
+          <div class="hint">A fala, metas e imagem/gráfico ficam associadas ao seu cargo e aparecem na aba de apresentação.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="bloco">
+          <h3>Falas cadastradas</h3>
+          <small>Visão geral de quais cargos já preencheram a fala.</small>
+          <div id="listaFalas"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA APRESENTAÇÃO -->
+  <div class="container" id="telaApresentacao">
+    <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar para página inicial</button>
+
+    <div class="bloco">
+      <div class="top-bar">
+        <label for="cargoApresentacao">Cargo a ser apresentado:</label>
+        <select id="cargoApresentacao" onchange="atualizarSelecaoApresentacao()">
+          <option value="">Selecione o cargo</option>
+        </select>
+        <div class="hint">Escolha o cargo para exibir a fala correspondente na tela.</div>
+      </div>
+
+      <div class="apresentacao-grid">
+        <div id="falaApresentacao">
+          <h3 id="tituloSlideCargo">Fala do cargo selecionado</h3>
+          <div id="falaApresentacaoTexto">Selecione um cargo acima para iniciar a apresentação.</div>
+          <div id="falaMetasResultados"></div>
+        </div>
+        <div id="graficoApresentacao">
+          <h3>Imagem / gráfico do cargo</h3>
+          <div id="graficoApresentacaoConteudo">
+            Ainda não há imagem ou gráfico carregado. Use o campo de link, upload e descrição na aba de cadastro.
+          </div>
+        </div>
+      </div>
+
+      <div class="botoes-operador">
+        <button onclick="entrarTelaCheiaApresentacao()">Apresentar em tela cheia</button>
+        <button onclick="gerarAta()">Gerar ATA completa (todas as falas)</button>
+        <button class="btn-sec" onclick="imprimirAta()">Imprimir / Salvar ATA em PDF</button>
+        <button class="btn-sec" onclick="enviarAtaPorEmail()">Enviar ATA por e-mail institucional</button>
+        <button class="btn-alert" onclick="limparLocal()">Limpar dados locais (fala de todos os cargos neste navegador)</button>
+      </div>
+      <div class="hint">A ATA é montada com todas as falas cadastradas, na ordem dos cargos.</div>
+
+      <div id="ataFinal"></div>
+    </div>
+  </div>
+
+  <!-- TELA HISTÓRICO DE ATAS -->
+  <div class="container" id="telaHistorico">
+    <button class="btn-voltar" onclick="voltarInicio()">⬅ Voltar para página inicial</button>
+
+    <div class="bloco">
+      <h3>Atas salvas</h3>
+      <small>Selecione para visualizar o conteúdo de reuniões anteriores.</small>
+      <div id="listaAtas"></div>
+      <div class="hint">As atas são salvas neste navegador (e opcionalmente no Firebase) sempre que você gera uma ata final.</div>
+    </div>
+
+    <div class="bloco" id="ataVisualizada" style="display:none;">
+      <h3 id="ataVisualizadaTitulo"></h3>
+      <div class="botoes-operador" style="margin-bottom:8px;">
+        <button onclick="imprimirAtaHistorica()">Imprimir / Salvar em PDF</button>
+      </div>
+      <div id="ataVisualizadaConteudo"></div>
+    </div>
+  </div>
+
+  <!-- Firebase (opcional) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    // ==========================
+    // CONFIGURAÇÃO FIREBASE (opcional)
+    // ==========================
+    const USE_FIREBASE = true; // coloque false se não for usar Firebase
+
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "reunioes-d8ea5.firebaseapp.com",
+      databaseURL: "https://reunioes-d8ea5-default-rtdb.firebaseio.com",
+      projectId: "reunioes-d8ea5",
+      storageBucket: "reunioes-d8ea5.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    let firebaseEnabled = false;
+    let db = null;
+
+    try{
+      if(USE_FIREBASE){
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        firebaseEnabled = true;
+        console.log("Firebase habilitado para ATA.");
+      }
+    }catch(e){
+      console.warn("Falha ao iniciar Firebase. Usando apenas armazenamento local.", e);
+      firebaseEnabled = false;
+    }
+
+    // ==========================
+    // CONFIG E-MAIL (AJUSTE AQUI)
+    // ==========================
+    // Coloque aqui o endpoint do Apps Script ou outro serviço que fará o envio do e-mail
+    const EMAIL_ENDPOINT = ""; // ex: "https://script.google.com/macros/s/SEU_SCRIPT_ID/exec"
+    const EMAIL_DESTINATARIOS = ""; // ex: "comando@pm.sp.gov.br;subcomando@pm.sp.gov.br"
+
+    // ==========================
+    // DADOS / UTILITÁRIOS
+    // ==========================
+    const ordemCargos = [
+      "Comandante do Batalhão",
+      "Subcomandante",
+      "Coordenador Operacional",
+      "Comandante da 1ª CIA",
+      "Comandante da 2ª CIA",
+      "Comandante da 3ª CIA",
+      "Comandante da 4ª CIA",
+      "Comandante da 5ª CIA",
+      "Comandante da Força Tática",
+      "Chefe P1","Chefe P2","Chefe P3","Chefe P4","Chefe P5",
+      "Chefe PJMD"
+    ];
+
+    let cargoLogado = "";
+    let slugLogado = "";
+    // {slug: {cargo, texto, atualizadoEm, imagemUrl, graficoDescricao, metasResultados, arquivoBase64, arquivoNome}}
+    let falas = {};
+    let ataVisualizadaAtual = null;
+    let ultimaAtaTexto = "";
+    let ultimaAtaData = "";
+
+    function slug(cargo){
+      return cargo
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-z0-9]+/g,"_")
+        .replace(/^_+|_+$/g,"");
+    }
+
+    function mostrar(id){
+      document.getElementById("telaInicial").style.display = (id==="telaInicial") ? "block" : "none";
+      document.getElementById("telaCadastro").style.display = (id==="telaCadastro") ? "block" : "none";
+      document.getElementById("telaApresentacao").style.display = (id==="telaApresentacao") ? "block" : "none";
+      document.getElementById("telaHistorico").style.display = (id==="telaHistorico") ? "block" : "none";
+    }
+
+    function voltarInicio(){
+      mostrar("telaInicial");
+    }
+
+    function irParaApresentacao(){
+      mostrar("telaApresentacao");
+      popularSelectApresentacao();
+      atualizarSelecaoApresentacao();
+    }
+
+    function abrirHistorico(){
+      mostrar("telaHistorico");
+      atualizarListaAtas();
+    }
+
+    function carregarLocal(){
+      try{
+        const dados = localStorage.getItem("falasAtaColaborativa");
+        if(dados) falas = JSON.parse(dados);
+      }catch(e){
+        console.warn("Erro ao carregar falas locais:", e);
+      }
+    }
+
+    function salvarLocal(){
+      try{
+        localStorage.setItem("falasAtaColaborativa", JSON.stringify(falas));
+      }catch(e){
+        console.warn("Erro ao salvar falas locais:", e);
+      }
+    }
+
+    function limparLocal(){
+      if(!confirm("Tem certeza que deseja apagar todas as falas locais (apenas neste navegador)?")) return;
+      localStorage.removeItem("falasAtaColaborativa");
+      falas = {};
+      atualizarListaFalas();
+      atualizarSelecaoApresentacao();
+
+      const tf = document.getElementById("textoFala");
+      const iu = document.getElementById("imagemUrl");
+      const gd = document.getElementById("graficoDescricao");
+      const fu = document.getElementById("arquivoUpload");
+      const mr = document.getElementById("metasResultados");
+      if(tf) tf.value = "";
+      if(iu) iu.value = "";
+      if(gd) gd.value = "";
+      if(fu) fu.value = "";
+      if(mr) mr.value = "";
+
+      const ataDiv = document.getElementById("ataFinal");
+      ataDiv.style.display = "none";
+      alert("Falas locais apagadas.");
+    }
+
+    // Histórico de atas
+    function carregarHistoricoAtas(){
+      try{
+        const dados = localStorage.getItem("historicoAtas");
+        return dados ? JSON.parse(dados) : [];
+      }catch(e){
+        console.warn("Erro ao carregar histórico de atas:", e);
+        return [];
+      }
+    }
+
+    function salvarHistoricoAtas(lista){
+      try{
+        localStorage.setItem("historicoAtas", JSON.stringify(lista));
+      }catch(e){
+        console.warn("Erro ao salvar histórico de atas:", e);
+      }
+    }
+
+    function salvarAtaHistorico(texto, dataStr, horaStr){
+      let lista = carregarHistoricoAtas();
+      const registro = {
+        id: Date.now(),
+        data: dataStr,
+        hora: horaStr,
+        titulo: `Reunião em ${dataStr} às ${horaStr}`,
+        conteudo: texto
+      };
+      lista.push(registro);
+      salvarHistoricoAtas(lista);
+
+      if(firebaseEnabled){
+        db.ref("atas").push(registro).catch(err=>{
+          console.warn("Erro ao salvar ata no Firebase:", err);
+        });
+      }
+    }
+
+    function atualizarListaAtas(){
+      const listaDiv = document.getElementById("listaAtas");
+      const historico = carregarHistoricoAtas().sort((a,b)=>b.id-a.id);
+      if(historico.length===0){
+        listaDiv.innerHTML = "<div class='hint'>Nenhuma ata foi salva ainda.</div>";
+        return;
+      }
+      let html = "";
+      historico.forEach(ata=>{
+        html += `
+          <button onclick="visualizarAta(${ata.id})">
+            <span>${ata.titulo}</span>
+            <span style="font-size:0.8rem;color:#bbb;">${ata.data} ${ata.hora}</span>
+          </button>
+        `;
+      });
+      listaDiv.innerHTML = html;
+    }
+
+    function visualizarAta(id){
+      const historico = carregarHistoricoAtas();
+      const ata = historico.find(a=>a.id===id);
+      if(!ata) return;
+      ataVisualizadaAtual = ata;
+      document.getElementById("ataVisualizadaTitulo").innerText = ata.titulo;
+      document.getElementById("ataVisualizadaConteudo").innerText = ata.conteudo;
+      document.getElementById("ataVisualizada").style.display = "block";
+    }
+
+    function imprimirAtaHistorica(){
+      if(!ataVisualizadaAtual){
+        alert("Selecione uma ata primeiro.");
+        return;
+      }
+      const titulo = ataVisualizadaAtual.titulo;
+      const conteudo = ataVisualizadaAtual.conteudo;
+      const win = window.open("", "_blank");
+      win.document.write(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>${titulo}</title>
+          </head>
+          <body style="font-family:Arial,Helvetica,sans-serif; padding:20px;">
+            <h2 style="text-align:center;text-transform:uppercase;letter-spacing:0.06em;">${titulo}</h2>
+            <pre style="white-space:pre-wrap;font-size:14px;line-height:1.6;">${conteudo}</pre>
+          </body>
+        </html>
+      `);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+
+    // Firebase listener de falas
+    if(firebaseEnabled){
+      db.ref("falas").on("value", snap=>{
+        const dados = snap.val() || {};
+        falas = dados;
+        salvarLocal();
+        atualizarListaFalas();
+        atualizarSelecaoApresentacao();
+        atualizarTextoSeProprio();
+      }, err=>{
+        console.warn("Erro ao ouvir Firebase:", err);
+      });
+    }else{
+      carregarLocal();
+    }
+
+    // ==========================
+    // LOGIN / CADASTRO
+    // ==========================
+    function login(){
+      const user = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
+
+      if(!user){ alert("Selecione seu cargo."); return; }
+      if(senha !== "1234"){ alert("Senha incorreta."); return; }
+
+      cargoLogado = user;
+      slugLogado = slug(user);
+
+      document.getElementById("tituloCargo").innerText = cargoLogado;
+      mostrar("telaCadastro");
+      atualizarListaFalas();
+      atualizarTextoSeProprio();
+    }
+
+    function atualizarTextoSeProprio(){
+      if(!cargoLogado) return;
+      const textarea = document.getElementById("textoFala");
+      const imagemInput = document.getElementById("imagemUrl");
+      const graficoText = document.getElementById("graficoDescricao");
+      const metasText = document.getElementById("metasResultados");
+      const arquivoInput = document.getElementById("arquivoUpload");
+      if(!textarea || !imagemInput || !graficoText || !metasText || !arquivoInput) return;
+
+      if(textarea.dataset.travadomanual === "1") return;
+      const dados = falas[slugLogado];
+      if(dados){
+        if(dados.texto) textarea.value = dados.texto;
+        if(typeof dados.imagemUrl === "string") imagemInput.value = dados.imagemUrl;
+        if(typeof dados.graficoDescricao === "string") graficoText.value = dados.graficoDescricao;
+        if(typeof dados.metasResultados === "string") metasText.value = dados.metasResultados;
+        // arquivo não pode ser reatribuído ao input file (segurança do navegador)
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      const textarea = document.getElementById("textoFala");
+      if(textarea){
+        textarea.addEventListener("input", ()=>{ textarea.dataset.travadomanual = "1"; });
+      }
+      popularSelectApresentacao();
+      atualizarListaFalas();
+      atualizarSelecaoApresentacao();
+    });
+
+    function salvarFala(){
+      if(!cargoLogado){
+        alert("Faça o login primeiro.");
+        return;
+      }
+
+      const texto = document.getElementById("textoFala").value.trim();
+      const imagemUrl = document.getElementById("imagemUrl").value.trim();
+      const graficoDescricao = document.getElementById("graficoDescricao").value.trim();
+      const metasResultados = document.getElementById("metasResultados").value.trim();
+      const arquivoInput = document.getElementById("arquivoUpload");
+
+      if(!texto){
+        alert("Digite sua fala antes de salvar.");
+        return;
+      }
+
+      function salvarRegistro(base64Arquivo, nomeArquivo){
+        const registro = {
+          cargo: cargoLogado,
+          texto: texto,
+          atualizadoEm: new Date().toISOString(),
+          imagemUrl: imagemUrl || "",
+          graficoDescricao: graficoDescricao || "",
+          metasResultados: metasResultados || "",
+          arquivoBase64: base64Arquivo || "",
+          arquivoNome: nomeArquivo || ""
+        };
+
+        falas[slugLogado] = registro;
+        salvarLocal();
+
+        if(firebaseEnabled){
+          db.ref("falas/" + slugLogado).set(registro)
+            .then(()=>{
+              alert("Dados salvos com sucesso (fala + metas + gráfico/arquivo).");
+              atualizarListaFalas();
+              atualizarSelecaoApresentacao();
+            })
+            .catch(err=>{
+              console.error("Erro Firebase:", err);
+              alert("Falha ao salvar no Firebase. Salvou apenas local.");
+              atualizarListaFalas();
+              atualizarSelecaoApresentacao();
+            });
+        }else{
+          alert("Dados salvos localmente.");
+          atualizarListaFalas();
+          atualizarSelecaoApresentacao();
+        }
+      }
+
+      // Se tem arquivo, ler como base64
+      if(arquivoInput.files.length > 0){
+        const file = arquivoInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e){
+          const base64 = e.target.result;
+          salvarRegistro(base64, file.name);
+        };
+        reader.readAsDataURL(file);
+      }else{
+        salvarRegistro("", "");
+      }
+    }
+
+    function atualizarListaFalas(){
+      const lista = document.getElementById("listaFalas");
+      if(!lista) return;
+
+      let html = "";
+      ordemCargos.forEach(c=>{
+        const s = slug(c);
+        const reg = falas[s];
+        const tem = reg && reg.texto && reg.texto.trim() !== "";
+        const icone = tem ? "✅" : "⏳";
+        const infoData = reg && reg.atualizadoEm ? new Date(reg.atualizadoEm).toLocaleString("pt-BR") : "";
+        html += `
+          <div class="linha-fala">
+            <div class="status">${icone}</div>
+            <span>${c}</span>
+            <small style="color:${infoData ? '#777' : 'transparent'};min-width:120px;text-align:right;">
+              ${infoData}
+            </small>
+          </div>
+        `;
+      });
+      lista.innerHTML = html;
+    }
+
+    // ==========================
+    // APRESENTAÇÃO (por cargo)
+    // ==========================
+    function popularSelectApresentacao(){
+      const sel = document.getElementById("cargoApresentacao");
+      if(!sel || sel.options.length>1) return;
+      ordemCargos.forEach(c=>{
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        sel.appendChild(opt);
+      });
+    }
+
+    function atualizarSelecaoApresentacao(){
+      const sel = document.getElementById("cargoApresentacao");
+      const textoDiv = document.getElementById("falaApresentacaoTexto");
+      const grafDiv = document.getElementById("graficoApresentacaoConteudo");
+      const metasDiv = document.getElementById("falaMetasResultados");
+      const tituloSlideCargo = document.getElementById("tituloSlideCargo");
+      if(!sel || !textoDiv || !grafDiv || !metasDiv || !tituloSlideCargo) return;
+
+      const cargo = sel.value;
+      if(!cargo){
+        tituloSlideCargo.textContent = "Fala do cargo selecionado";
+        textoDiv.textContent = "Selecione um cargo acima para iniciar a apresentação.";
+        grafDiv.textContent = "Ainda não há imagem ou gráfico carregado. Use o campo de link, upload e descrição na aba de cadastro.";
+        metasDiv.textContent = "";
+        return;
+      }
+
+      tituloSlideCargo.textContent = cargo;
+      const s = slug(cargo);
+      const reg = falas[s];
+
+      // Fala
+      if(reg && reg.texto && reg.texto.trim()!==""){
+        textoDiv.textContent = reg.texto;
+      }else{
+        textoDiv.textContent = "Ainda não há fala cadastrada para este cargo.";
+      }
+
+      // Metas e resultados
+      if(reg && reg.metasResultados && reg.metasResultados.trim()!==""){
+        metasDiv.innerHTML = "<strong>Metas e resultados:</strong><br>" +
+          reg.metasResultados.replace(/\n/g,"<br>");
+      }else{
+        metasDiv.innerHTML = "";
+      }
+
+      // Imagem / arquivo / descrição
+      if(reg){
+
+        if(reg.arquivoBase64){
+          const nome = reg.arquivoNome || "arquivo";
+
+          if(reg.arquivoBase64.startsWith("data:image")){
+            grafDiv.innerHTML = `
+              <div style="margin-bottom:8px;">
+                <img src="${reg.arquivoBase64}"
+                     style="max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(249,255,122,0.4);" />
+              </div>
+              ${reg.graficoDescricao ? "<div style='font-size:0.86rem;line-height:1.5;'>"+reg.graficoDescricao+"</div>" : ""}
+            `;
+          }else{
+            grafDiv.innerHTML = `
+              <button onclick="abrirArquivoBase64('${reg.arquivoBase64}', '${nome}')"
+                      style="padding:10px 15px;margin-bottom:10px;">
+                Abrir arquivo enviado (${nome})
+              </button>
+              ${reg.graficoDescricao ? "<div style='font-size:0.86rem;line-height:1.5;'>"+reg.graficoDescricao+"</div>" : ""}
+            `;
+          }
+          return;
+        }
+
+        if(reg.imagemUrl){
+          grafDiv.innerHTML = `
+            <div style="margin-bottom:8px;">
+              <img src="${reg.imagemUrl}"
+                   style="max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(249,255,122,0.4);" />
+            </div>
+            ${reg.graficoDescricao ? "<div style='font-size:0.86rem;line-height:1.5;'>"+reg.graficoDescricao+"</div>" : ""}
+          `;
+          return;
+        }
+
+        if(reg.graficoDescricao){
+          grafDiv.innerHTML = `<div style="font-size:0.86rem;line-height:1.5;">${reg.graficoDescricao}</div>`;
+          return;
+        }
+      }
+
+      grafDiv.textContent = "Nenhum arquivo, imagem ou gráfico cadastrado para este cargo.";
+    }
+
+    function entrarTelaCheiaApresentacao(){
+      const el = document.getElementById("telaApresentacao");
+      if(el && el.requestFullscreen){
+        el.requestFullscreen().catch(()=>{});
+      }else if(document.documentElement.requestFullscreen){
+        document.documentElement.requestFullscreen().catch(()=>{});
+      }
+    }
+
+    function abrirArquivoBase64(base64, nome){
+      const win = window.open();
+      win.document.write(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>${nome}</title>
+          </head>
+          <body style="margin:0;padding:0;">
+            <iframe src="${base64}" style="width:100%;height:100vh;border:none;"></iframe>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+
+    // ==========================
+    // ATA / IMPRESSÃO
+    // ==========================
+    function gerarAta(){
+      let data = new Date();
+      const dataStr = data.toLocaleDateString("pt-BR");
+      const horaStr = data.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+
+      let texto = `ATA DA REUNIÃO - 18º BPM/I\nData: ${dataStr} - Início: ${horaStr}\n\n`;
+
+      let temAlgo = false;
+      ordemCargos.forEach(c=>{
+        const s = slug(c);
+        const reg = falas[s];
+        if(reg && reg.texto && reg.texto.trim()!==""){
+          temAlgo = true;
+          texto += `${c}:\n${reg.texto}\n`;
+          if(reg.metasResultados && reg.metasResultados.trim()!==""){
+            texto += `Metas e resultados:\n${reg.metasResultados}\n`;
+          }
+          texto += `\n`;
+        }
+      });
+
+      if(!temAlgo){
+        alert("Não há falas registradas para gerar a ATA.");
+        return;
+      }
+
+      texto += "______________________________________________\n";
+      texto += "Assinatura:\n\n";
+      texto += "______________________________________________\n";
+
+      ultimaAtaTexto = texto;
+      ultimaAtaData = dataStr;
+
+      const ataDiv = document.getElementById("ataFinal");
+      ataDiv.style.display = "block";
+      ataDiv.innerHTML = "";
+      const titulo = document.createElement("h2");
+      titulo.textContent = "ATA DA REUNIÃO - 18º BPM/I";
+      ataDiv.appendChild(titulo);
+      const pre = document.createElement("div");
+      pre.textContent = texto;
+      ataDiv.appendChild(pre);
+
+      salvarAtaHistorico(texto, dataStr, horaStr);
+
+      window.scrollTo({top: ataDiv.offsetTop, behavior:"smooth"});
+      alert("ATA gerada e salva no histórico desta máquina.");
+    }
+
+    function imprimirAta(){
+      const ataDiv = document.getElementById("ataFinal");
+      if(ataDiv.style.display === "none" || !ataDiv.innerText.trim()){
+        gerarAta();
+      }
+      setTimeout(()=>window.print(), 200);
+    }
+
+    // ==========================
+    // ENVIO POR E-MAIL
+    // ==========================
+    function enviarAtaPorEmail(){
+      if(!ultimaAtaTexto){
+        // tenta gerar na hora
+        gerarAta();
+      }
+      if(!ultimaAtaTexto){
+        alert("Não foi possível gerar a ATA para envio.");
+        return;
+      }
+      if(!EMAIL_ENDPOINT){
+        alert("Configure o endpoint de e-mail na constante EMAIL_ENDPOINT no código.");
+        return;
+      }
+
+      const payload = {
+        ata: ultimaAtaTexto,
+        data: ultimaAtaData,
+        assunto: "ATA de reunião - 18º BPM/I - " + (ultimaAtaData || ""),
+        destinatarios: EMAIL_DESTINATARIOS
+      };
+
+      fetch(EMAIL_ENDPOINT, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      })
+      .then(r=>{
+        if(!r.ok) throw new Error("Status HTTP " + r.status);
+        return r.text();
+      })
+      .then(()=>{
+        alert("ATA enviada para o e-mail institucional (se o serviço estiver configurado corretamente).");
+      })
+      .catch(err=>{
+        console.error("Erro ao enviar e-mail:",err);
+        alert("Não foi possível enviar o e-mail. Verifique o endpoint/API configurado no código.");
+      });
+    }
+  </script>
+
+</body>
+</html>
